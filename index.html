@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Londrina Run · Painel de Treinos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #222222;
+    --accent: #c8f135;
+    --accent2: #f1c135;
+    --muted: #444444;
+    --text: #f0f0f0;
+    --text2: #888888;
+    --text3: #555555;
+    --danger: #ff4d4d;
+    --info: #4d9fff;
+    --radius: 6px;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform: scale(1); }
+    50% { opacity:0.5; transform: scale(0.8); }
+  }
+
+  .header-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text2);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  .header-meta span { color: var(--accent); }
+
+  /* ── LAYOUT ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 32px; }
+
+  /* ── COUNTDOWN ── */
+  .countdown-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .countdown-left h1 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .countdown-left h1 span { color: var(--accent); }
+
+  .countdown-left p {
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .countdown-blocks {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .cd-block {
+    text-align: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    min-width: 64px;
+  }
+
+  .cd-num {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+    display: block;
+  }
+
+  .cd-label {
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .cd-sep {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--muted);
+    line-height: 1;
+  }
+
+  /* ── STATS GRID ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+  }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-value.accent { color: var(--accent); }
+  .stat-value.accent2 { color: var(--accent2); }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 28px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .progress-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .progress-pct {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 0.6s ease;
+  }
+
+  .week-dots {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .week-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+    cursor: default;
+    transition: all 0.2s;
+  }
+
+  .week-dot.done { background: var(--accent); border-color: var(--accent); color: #0a0a0a; font-weight: 500; }
+  .week-dot.partial { background: var(--surface2); border-color: var(--accent2); color: var(--accent2); }
+  .week-dot.current { border-color: var(--accent); color: var(--accent); }
+
+  /* ── PLAN TABLE ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .btn {
+    background: var(--accent);
+    color: #0a0a0a;
+    border: none;
+    border-radius: var(--radius);
+    padding: 8px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn:hover { opacity: 0.85; }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 7px 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-outline:hover { border-color: var(--text2); color: var(--text); }
+
+  /* ── WEEKS ── */
+  .week-block {
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .week-head {
+    background: var(--surface2);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .week-head-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .phase-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  .phase-base { background: rgba(77,159,255,0.12); color: #4d9fff; border: 1px solid rgba(77,159,255,0.2); }
+  .phase-dev { background: rgba(200,241,53,0.1); color: var(--accent); border: 1px solid rgba(200,241,53,0.2); }
+  .phase-peak { background: rgba(241,193,53,0.1); color: var(--accent2); border: 1px solid rgba(241,193,53,0.2); }
+  .phase-taper { background: rgba(255,77,77,0.1); color: #ff7f7f; border: 1px solid rgba(255,77,77,0.2); }
+
+  .week-head-vol { font-family: var(--font-mono); font-size: 11px; color: var(--text3); }
+
+  /* ── WORKOUT ROWS ── */
+  .workout-row {
+    display: grid;
+    grid-template-columns: 90px 100px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .workout-row:last-child { border-bottom: none; }
+  .workout-row:hover { background: rgba(255,255,255,0.02); }
+  .workout-row.completed { opacity: 0.7; }
+
+  .wr-date {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .wr-type {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 3px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .type-run { background: rgba(200,241,53,0.1); color: var(--accent); border: 1px solid rgba(200,241,53,0.15); }
+  .type-strength { background: rgba(77,159,255,0.1); color: #4d9fff; border: 1px solid rgba(77,159,255,0.15); }
+  .type-rest { background: rgba(255,255,255,0.04); color: var(--text3); border: 1px solid var(--border); }
+  .type-race { background: rgba(255,193,53,0.15); color: var(--accent2); border: 1px solid rgba(255,193,53,0.3); }
+
+  .wr-desc {
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .wr-desc strong { color: var(--text); font-weight: 500; }
+
+  /* ── LOG INPUT AREA ── */
+  .wr-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .check-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .check-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .check-btn.done { background: var(--accent); border-color: var(--accent); color: #0a0a0a; }
+
+  .log-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .log-btn:hover { border-color: var(--text2); color: var(--text2); }
+  .log-btn.has-log { border-color: var(--info); color: var(--info); }
+
+  /* ── LOG DISPLAY ── */
+  .workout-log {
+    display: none;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border);
+    border-top: 1px dashed var(--border);
+  }
+
+  .workout-log.visible { display: block; }
+
+  .log-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr auto;
+    gap: 8px;
+    align-items: end;
+    flex-wrap: wrap;
+  }
+
+  .log-field label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+
+  .log-field input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .log-field input:focus { border-color: var(--accent); }
+  .log-field input::placeholder { color: var(--text3); }
+
+  .log-result {
+    margin-top: 12px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .log-chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 3px 10px;
+  }
+
+  .log-chip span { color: var(--accent); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    width: 90%;
+    max-width: 480px;
+  }
+
+  .modal-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+
+  .modal-field { margin-bottom: 14px; }
+  .modal-field label { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--text2); margin-bottom: 5px; }
+  .modal-field input, .modal-field textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 9px 12px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+  .modal-field input:focus, .modal-field textarea:focus { border-color: var(--accent); }
+  .modal-field input::placeholder, .modal-field textarea::placeholder { color: var(--text3); }
+
+  .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  .btn-danger { background: transparent; color: var(--danger); border: 1px solid rgba(255,77,77,0.3); border-radius: var(--radius); padding: 8px 16px; font-family: var(--font-mono); font-size: 12px; cursor: pointer; }
+  .btn-danger:hover { background: rgba(255,77,77,0.08); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 32px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 48px;
+  }
+
+  footer span { color: var(--accent); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    main { padding: 16px; }
+    header { padding: 14px 16px; }
+    .workout-row { grid-template-columns: 80px 90px 1fr; }
+    .wr-actions { grid-column: 1/-1; justify-content: flex-end; }
+    .log-form { grid-template-columns: 1fr 1fr; }
+    .countdown-section { flex-direction: column; align-items: flex-start; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Londrina Run
+  </div>
+  <div class="header-meta">
+    Maratona de Londrina · 10km<br>
+    Meta: <span>sub 55min</span> · Alvo: <span>~50min</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-section">
+    <div class="countdown-left">
+      <h1>Faltam <span id="days-left">--</span> dias<br>para a prova</h1>
+      <p>05 de julho de 2026 · Londrina, PR</p>
+    </div>
+    <div class="countdown-blocks">
+      <div class="cd-block">
+        <span class="cd-num" id="cd-d">--</span>
+        <span class="cd-label">dias</span>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-block">
+        <span class="cd-num" id="cd-h">--</span>
+        <span class="cd-label">horas</span>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-block">
+        <span class="cd-num" id="cd-m">--</span>
+        <span class="cd-label">min</span>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-block">
+        <span class="cd-num" id="cd-s">--</span>
+        <span class="cd-label">seg</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Treinos feitos</div>
+      <div class="stat-value accent" id="st-done">0</div>
+      <div class="stat-sub" id="st-done-sub">de 0 planejados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Km acumulados</div>
+      <div class="stat-value" id="st-km">0</div>
+      <div class="stat-sub">quilômetros rodados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Melhor pace</div>
+      <div class="stat-value accent2" id="st-pace">--</div>
+      <div class="stat-sub">min/km no plano</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Semana atual</div>
+      <div class="stat-value" id="st-week">--</div>
+      <div class="stat-sub" id="st-phase">fase de preparação</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-section">
+    <div class="progress-header">
+      <div class="progress-title">Progresso do plano</div>
+      <div class="progress-pct" id="pct-label">0%</div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="week-dots" id="week-dots"></div>
+  </div>
+
+  <!-- PLAN -->
+  <div class="section-header">
+    <div class="section-title">Plano de treinos</div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-outline" onclick="expandAll()">Expandir tudo</button>
+      <button class="btn" onclick="openAddLog()">+ Adicionar treino</button>
+    </div>
+  </div>
+
+  <div id="plan-container"></div>
+
+</main>
+
+<footer>
+  Londrina Run · Plano 19 mai → 05 jul 2026 · <span>sub 55min</span>
+</footer>
+
+<!-- MODAL: Add / Edit Log -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="modal-title">Registrar treino</div>
+    <div class="modal-sub" id="modal-sub">Preencha os dados do treino executado.</div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Distância (km)</label>
+        <input type="number" step="0.01" id="inp-dist" placeholder="ex: 6.2" />
+      </div>
+      <div class="modal-field">
+        <label>Pace (min:seg/km)</label>
+        <input type="text" id="inp-pace" placeholder="ex: 6:10" />
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Duração (min)</label>
+        <input type="number" step="1" id="inp-dur" placeholder="ex: 42" />
+      </div>
+      <div class="modal-field">
+        <label>Elevação (m)</label>
+        <input type="number" step="1" id="inp-elev" placeholder="ex: 45" />
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Observações</label>
+      <textarea id="inp-notes" rows="2" placeholder="Como foi? Sentiu bem? Dor? Clima?"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="btn-clear-log" onclick="clearCurrentLog()" style="display:none">Apagar registro</button>
+      <button class="btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn" onclick="saveLog()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA: PLAN ──────────────────────────────────────────────────────
+const RACE_DATE = new Date('2026-07-05T08:00:00');
+
+const PLAN = [
+  {
+    week: 1, label: 'Semana 1 · 19–25 mai', phase: 'base', phaseLabel: 'Base aeróbica', vol: '~22km',
+    workouts: [
+      { id:'w1d1', date:'19/05', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>5km</strong> · pace 6:30–6:50/km · ritmo confortável' },
+      { id:'w1d2', date:'20/05', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito corpo · 30–40min · sem equipamento' },
+      { id:'w1d3', date:'22/05', day:'Qui', type:'run', typeLabel:'Corrida + strides', desc:'<strong>6km</strong> · 6:30/km + 4×80m acelerados ao final' },
+      { id:'w1d4', date:'24/05', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>10km</strong> · 6:40–7:00/km · sem pressão de pace' },
+    ]
+  },
+  {
+    week: 2, label: 'Semana 2 · 26 mai–01 jun', phase: 'base', phaseLabel: 'Base aeróbica', vol: '~24km',
+    workouts: [
+      { id:'w2d1', date:'26/05', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>6km</strong> · 6:30/km · fácil e constante' },
+      { id:'w2d2', date:'27/05', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito corpo · 35–40min' },
+      { id:'w2d3', date:'29/05', day:'Qui', type:'run', typeLabel:'Tempo run', desc:'<strong>7km</strong> · 2km aquec. + 3km a 5:40/km + 2km volta' },
+      { id:'w2d4', date:'31/05', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>11km</strong> · 6:30–6:45/km · constante' },
+    ]
+  },
+  {
+    week: 3, label: 'Semana 3 · 02–08 jun', phase: 'dev', phaseLabel: 'Desenvolvimento de velocidade', vol: '~25km',
+    workouts: [
+      { id:'w3d1', date:'02/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>6km</strong> · 6:20/km · recuperação ativa' },
+      { id:'w3d2', date:'03/06', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito + plyometria · 40min' },
+      { id:'w3d3', date:'05/06', day:'Qui', type:'run', typeLabel:'Intervalado', desc:'<strong>6×800m</strong> · pace 5:10–5:20/km · 90s recuperação' },
+      { id:'w3d4', date:'07/06', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>12km</strong> · 6:20–6:40/km · 2km finais a 5:50' },
+    ]
+  },
+  {
+    week: 4, label: 'Semana 4 · 09–15 jun', phase: 'dev', phaseLabel: 'Desenvolvimento de velocidade', vol: '~26km',
+    workouts: [
+      { id:'w4d1', date:'09/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>6km</strong> · 6:20/km · fácil' },
+      { id:'w4d2', date:'10/06', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito + plyometria · 40min' },
+      { id:'w4d3', date:'12/06', day:'Qui', type:'run', typeLabel:'Tempo run', desc:'<strong>8km</strong> · 2km aquec. + 4km a 5:30/km + 2km volta' },
+      { id:'w4d4', date:'14/06', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>12km</strong> · 6:10–6:30/km · 3km finais a 5:40' },
+    ]
+  },
+  {
+    week: 5, label: 'Semana 5 · 16–22 jun', phase: 'peak', phaseLabel: 'Simulação de prova', vol: '~24km',
+    workouts: [
+      { id:'w5d1', date:'16/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>5km</strong> · 6:20/km · leve e solto' },
+      { id:'w5d2', date:'17/06', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito moderado · 35min' },
+      { id:'w5d3', date:'19/06', day:'Qui', type:'run', typeLabel:'Intervalado', desc:'<strong>6×1km</strong> · pace 5:10/km · 2min recuperação' },
+      { id:'w5d4', date:'21/06', day:'Sáb', type:'run', typeLabel:'Simulado 8km', desc:'<strong>8km</strong> · pace meta: 5:30–5:40/km · esforço real de prova' },
+    ]
+  },
+  {
+    week: 6, label: 'Semana 6 · 23–29 jun', phase: 'peak', phaseLabel: 'Simulação de prova', vol: '~22km',
+    workouts: [
+      { id:'w6d1', date:'23/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>5km</strong> · 6:30/km · recuperação' },
+      { id:'w6d2', date:'24/06', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito leve · 30min' },
+      { id:'w6d3', date:'26/06', day:'Qui', type:'run', typeLabel:'Tempo run', desc:'<strong>7km</strong> · 2km aquec. + 3km a 5:20–5:30/km + 2km volta' },
+      { id:'w6d4', date:'28/06', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>10km</strong> · 6:00–6:20/km · 3km finais a 5:30' },
+    ]
+  },
+  {
+    week: 7, label: 'Semana 7 · 30 jun–05 jul', phase: 'taper', phaseLabel: 'Taper', vol: '~13km',
+    workouts: [
+      { id:'w7d1', date:'30/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>5km</strong> · 6:30/km · solto e sem pressão' },
+      { id:'w7d2', date:'01/07', day:'Ter', type:'rest', typeLabel:'Descanso', desc:'Alongamento e descanso ativo — sem força esta semana' },
+      { id:'w7d3', date:'03/07', day:'Qui', type:'run', typeLabel:'Ativação', desc:'<strong>3km</strong> · 6:00/km + 4×100m no pace de prova' },
+      { id:'w7d4', date:'05/07', day:'Sáb', type:'race', typeLabel:'PROVA!', desc:'<strong>Maratona de Londrina · 10km</strong> · Boa corrida! 🏃' },
+    ]
+  },
+];
+
+// ── STATE ────────────────────────────────────────────────────────────
+let state = {};
+let currentModal = null;
+
+function loadState() {
+  try { state = JSON.parse(localStorage.getItem('londrina_run_v1') || '{}'); }
+  catch(e) { state = {}; }
+}
+
+function saveState() {
+  localStorage.setItem('londrina_run_v1', JSON.stringify(state));
+}
+
+// ── COUNTDOWN ───────────────────────────────────────────────────────
+function updateCountdown() {
+  const now = new Date();
+  const diff = RACE_DATE - now;
+  if (diff <= 0) {
+    document.getElementById('days-left').textContent = '0';
+    ['cd-d','cd-h','cd-m','cd-s'].forEach(id => document.getElementById(id).textContent = '00');
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('days-left').textContent = d;
+  document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────
+function typeClass(type) {
+  return { run:'type-run', strength:'type-strength', rest:'type-rest', race:'type-race' }[type] || 'type-rest';
+}
+
+function phaseClass(phase) {
+  return 'phase-'+phase;
+}
+
+function renderPlan() {
+  const container = document.getElementById('plan-container');
+  container.innerHTML = '';
+
+  PLAN.forEach(week => {
+    const block = document.createElement('div');
+    block.className = 'week-block';
+    block.id = 'week-'+week.week;
+
+    block.innerHTML = `
+      <div class="week-head">
+        <div class="week-head-title">
+          ${week.label}
+          <span class="phase-badge ${phaseClass(week.phase)}">${week.phaseLabel}</span>
+        </div>
+        <div class="week-head-vol">${week.vol}</div>
+      </div>
+    `;
+
+    week.workouts.forEach(w => {
+      const log = state[w.id] || {};
+      const done = !!log.done;
+
+      const row = document.createElement('div');
+      row.className = 'workout-row' + (done ? ' completed' : '');
+      row.id = 'row-'+w.id;
+
+      const hasLog = log.dist || log.pace || log.dur;
+
+      row.innerHTML = `
+        <div class="wr-date">${w.day} · ${w.date}</div>
+        <div class="wr-type ${typeClass(w.type)}">${w.typeLabel}</div>
+        <div class="wr-desc">${w.desc}</div>
+        <div class="wr-actions">
+          ${w.type !== 'rest' ? `<button class="log-btn ${hasLog?'has-log':''}" onclick="toggleLog('${w.id}')" title="Registrar dados">${hasLog ? '📋 ver log' : '+ log'}</button>` : ''}
+          <button class="check-btn ${done?'done':''}" onclick="toggleDone('${w.id}')" title="${done?'Marcar como não feito':'Marcar como feito'}">
+            ${done ? '✓' : ''}
+          </button>
+        </div>
+      `;
+
+      block.appendChild(row);
+
+      // Log area
+      const logArea = document.createElement('div');
+      logArea.className = 'workout-log';
+      logArea.id = 'log-'+w.id;
+
+      if (hasLog) {
+        logArea.innerHTML = `
+          <div class="log-result">
+            ${log.dist ? `<div class="log-chip"><span>${log.dist}km</span></div>` : ''}
+            ${log.pace ? `<div class="log-chip">pace <span>${log.pace}/km</span></div>` : ''}
+            ${log.dur ? `<div class="log-chip"><span>${log.dur}min</span></div>` : ''}
+            ${log.elev ? `<div class="log-chip">elev <span>${log.elev}m</span></div>` : ''}
+            ${log.notes ? `<div class="log-chip">"${log.notes.substring(0,40)}${log.notes.length>40?'…':''}"</div>` : ''}
+            <button class="log-btn has-log" onclick="openLogModal('${w.id}','${w.typeLabel}','${w.date}')">editar</button>
+          </div>
+        `;
+      } else {
+        logArea.innerHTML = `
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:12px;color:var(--text3);">Nenhum dado registrado ainda</span>
+            <button class="btn" style="font-size:11px;padding:6px 14px;" onclick="openLogModal('${w.id}','${w.typeLabel}','${w.date}')">Registrar agora</button>
+          </div>
+        `;
+      }
+
+      block.appendChild(logArea);
+    });
+
+    container.appendChild(block);
+  });
+}
+
+function toggleLog(id) {
+  const el = document.getElementById('log-'+id);
+  if (!el) return;
+  el.classList.toggle('visible');
+}
+
+function expandAll() {
+  document.querySelectorAll('.workout-log').forEach(el => el.classList.add('visible'));
+}
+
+function toggleDone(id) {
+  if (!state[id]) state[id] = {};
+  state[id].done = !state[id].done;
+  saveState();
+  renderAll();
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────
+function openLogModal(id, typeLabel, date) {
+  currentModal = id;
+  const log = state[id] || {};
+  document.getElementById('modal-title').textContent = typeLabel + ' · ' + date;
+  document.getElementById('modal-sub').textContent = 'Registre os dados do treino executado.';
+  document.getElementById('inp-dist').value = log.dist || '';
+  document.getElementById('inp-pace').value = log.pace || '';
+  document.getElementById('inp-dur').value = log.dur || '';
+  document.getElementById('inp-elev').value = log.elev || '';
+  document.getElementById('inp-notes').value = log.notes || '';
+  const hasLog = log.dist || log.pace;
+  document.getElementById('btn-clear-log').style.display = hasLog ? 'block' : 'none';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function openAddLog() {
+  openLogModal('extra_'+Date.now(), 'Treino extra', 'hoje');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('open');
+    currentModal = null;
+  }
+}
+
+function saveLog() {
+  if (!currentModal) return;
+  if (!state[currentModal]) state[currentModal] = {};
+  const dist = document.getElementById('inp-dist').value;
+  const pace = document.getElementById('inp-pace').value;
+  const dur = document.getElementById('inp-dur').value;
+  const elev = document.getElementById('inp-elev').value;
+  const notes = document.getElementById('inp-notes').value;
+  if (dist) state[currentModal].dist = parseFloat(dist).toFixed(2);
+  if (pace) state[currentModal].pace = pace;
+  if (dur) state[currentModal].dur = parseInt(dur);
+  if (elev) state[currentModal].elev = parseInt(elev);
+  if (notes) state[currentModal].notes = notes;
+  if (dist || pace) state[currentModal].done = true;
+  saveState();
+  closeModal();
+  renderAll();
+}
+
+function clearCurrentLog() {
+  if (!currentModal || !state[currentModal]) return;
+  const keep = { done: state[currentModal].done };
+  state[currentModal] = keep;
+  saveState();
+  closeModal();
+  renderAll();
+}
+
+// ── STATS ────────────────────────────────────────────────────────────
+function updateStats() {
+  const allWorkouts = PLAN.flatMap(w => w.workouts);
+  const total = allWorkouts.filter(w => w.type !== 'rest').length;
+  const done = allWorkouts.filter(w => (state[w.id] || {}).done).length;
+
+  let km = 0;
+  let bestPace = null;
+  allWorkouts.forEach(w => {
+    const log = state[w.id] || {};
+    if (log.dist) km += parseFloat(log.dist);
+    if (log.pace) {
+      const parts = log.pace.split(':');
+      if (parts.length === 2) {
+        const totalSec = parseInt(parts[0])*60 + parseInt(parts[1]);
+        if (!bestPace || totalSec < bestPace) bestPace = totalSec;
+      }
+    }
+  });
+
+  document.getElementById('st-done').textContent = done;
+  document.getElementById('st-done-sub').textContent = 'de ' + total + ' planejados';
+  document.getElementById('st-km').textContent = km.toFixed(1);
+
+  if (bestPace) {
+    const m = Math.floor(bestPace/60);
+    const s = bestPace%60;
+    document.getElementById('st-pace').textContent = m+':'+(s<10?'0':'')+s;
+  } else {
+    document.getElementById('st-pace').textContent = '--';
+  }
+
+  // Current week
+  const now = new Date();
+  const start = new Date('2026-05-19');
+  const daysDiff = Math.floor((now - start)/86400000);
+  const currentWeek = Math.min(7, Math.max(1, Math.floor(daysDiff/7)+1));
+  document.getElementById('st-week').textContent = currentWeek <= 7 ? currentWeek + 'ª semana' : 'Prova!';
+  const phases = ['','Base aeróbica','Base aeróbica','Velocidade','Velocidade','Simulação','Simulação','Taper'];
+  document.getElementById('st-phase').textContent = phases[currentWeek] || 'concluído';
+
+  // Progress
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+  document.getElementById('pct-label').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Week dots
+  const dotsEl = document.getElementById('week-dots');
+  dotsEl.innerHTML = '';
+  PLAN.forEach(week => {
+    const weekWorkouts = week.workouts.filter(w => w.type !== 'rest' && w.type !== 'race');
+    const weekDone = weekWorkouts.filter(w => (state[w.id]||{}).done).length;
+    let cls = '';
+    if (weekDone === weekWorkouts.length && weekWorkouts.length > 0) cls = 'done';
+    else if (weekDone > 0) cls = 'partial';
+    else if (week.week === currentWeek) cls = 'current';
+    const dot = document.createElement('div');
+    dot.className = 'week-dot ' + cls;
+    dot.title = week.label;
+    dot.textContent = 'S' + week.week;
+    dotsEl.appendChild(dot);
+  });
+}
+
+// ── MAIN ─────────────────────────────────────────────────────────────
+function renderAll() {
+  renderPlan();
+  updateStats();
+}
+
+loadState();
+renderAll();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// Keyboard: ESC closes modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal({target: document.getElementById('modal-overlay')});
+});
+</script>
+</body>
+</html>
