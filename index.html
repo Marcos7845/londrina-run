@@ -1,1075 +1,563 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Londrina Run · Painel de Treinos</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Unbounded:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root {
-    --bg: #0a0a0a;
-    --surface: #111111;
-    --surface2: #1a1a1a;
-    --border: #222222;
-    --accent: #c8f135;
-    --accent2: #f1c135;
-    --muted: #444444;
-    --text: #f0f0f0;
-    --text2: #888888;
-    --text3: #555555;
-    --danger: #ff4d4d;
-    --info: #4d9fff;
-    --radius: 6px;
-    --font-display: 'Syne', sans-serif;
-    --font-mono: 'DM Mono', monospace;
-    --font-body: 'DM Sans', sans-serif;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
-
-  /* ── HEADER ── */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    background: rgba(10,10,10,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-
-  .logo {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 18px;
-    letter-spacing: -0.02em;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo-dot {
-    width: 8px; height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%,100% { opacity:1; transform: scale(1); }
-    50% { opacity:0.5; transform: scale(0.8); }
-  }
-
-  .header-meta {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text2);
-    text-align: right;
-    line-height: 1.8;
-  }
-
-  .header-meta span { color: var(--accent); }
-
-  /* ── LAYOUT ── */
-  main { max-width: 1100px; margin: 0 auto; padding: 32px; }
-
-  /* ── COUNTDOWN ── */
-  .countdown-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px 32px;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-
-  .countdown-left h1 {
-    font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    margin-bottom: 6px;
-  }
-
-  .countdown-left h1 span { color: var(--accent); }
-
-  .countdown-left p {
-    font-size: 13px;
-    color: var(--text2);
-  }
-
-  .countdown-blocks {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-
-  .cd-block {
-    text-align: center;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 20px;
-    min-width: 64px;
-  }
-
-  .cd-num {
-    font-family: var(--font-mono);
-    font-size: 28px;
-    font-weight: 500;
-    color: var(--accent);
-    line-height: 1;
-    display: block;
-  }
-
-  .cd-label {
-    font-size: 10px;
-    color: var(--text3);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-top: 4px;
-    display: block;
-  }
-
-  .cd-sep {
-    font-family: var(--font-mono);
-    font-size: 24px;
-    color: var(--muted);
-    line-height: 1;
-  }
-
-  /* ── STATS GRID ── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-  }
-
-  .stat-label {
-    font-size: 11px;
-    color: var(--text3);
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    margin-bottom: 6px;
-    font-family: var(--font-mono);
-  }
-
-  .stat-value {
-    font-family: var(--font-display);
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1;
-  }
-
-  .stat-value.accent { color: var(--accent); }
-  .stat-value.accent2 { color: var(--accent2); }
-
-  .stat-sub {
-    font-size: 11px;
-    color: var(--text3);
-    margin-top: 4px;
-  }
-
-  /* ── PROGRESS BAR ── */
-  .progress-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    margin-bottom: 28px;
-  }
-
-  .progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-  }
-
-  .progress-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: -0.01em;
-  }
-
-  .progress-pct {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--accent);
-  }
-
-  .progress-bar {
-    height: 6px;
-    background: var(--surface2);
-    border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 999px;
-    transition: width 0.6s ease;
-  }
-
-  .week-dots {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .week-dot {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text3);
-    cursor: default;
-    transition: all 0.2s;
-  }
-
-  .week-dot.done { background: var(--accent); border-color: var(--accent); color: #0a0a0a; font-weight: 500; }
-  .week-dot.partial { background: var(--surface2); border-color: var(--accent2); color: var(--accent2); }
-  .week-dot.current { border-color: var(--accent); color: var(--accent); }
-
-  /* ── PLAN TABLE ── */
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-
-  .section-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: -0.02em;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .section-title::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 16px;
-    background: var(--accent);
-    border-radius: 2px;
-  }
-
-  .btn {
-    background: var(--accent);
-    color: #0a0a0a;
-    border: none;
-    border-radius: var(--radius);
-    padding: 8px 16px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-
-  .btn:hover { opacity: 0.85; }
-  .btn:active { transform: scale(0.97); }
-
-  .btn-outline {
-    background: transparent;
-    color: var(--text2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 7px 14px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-  }
-
-  .btn-outline:hover { border-color: var(--text2); color: var(--text); }
-
-  /* ── WEEKS ── */
-  .week-block {
-    margin-bottom: 20px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-
-  .week-head {
-    background: var(--surface2);
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .week-head-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .phase-badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-  }
-
-  .phase-base { background: rgba(77,159,255,0.12); color: #4d9fff; border: 1px solid rgba(77,159,255,0.2); }
-  .phase-dev { background: rgba(200,241,53,0.1); color: var(--accent); border: 1px solid rgba(200,241,53,0.2); }
-  .phase-peak { background: rgba(241,193,53,0.1); color: var(--accent2); border: 1px solid rgba(241,193,53,0.2); }
-  .phase-taper { background: rgba(255,77,77,0.1); color: #ff7f7f; border: 1px solid rgba(255,77,77,0.2); }
-
-  .week-head-vol { font-family: var(--font-mono); font-size: 11px; color: var(--text3); }
-
-  /* ── WORKOUT ROWS ── */
-  .workout-row {
-    display: grid;
-    grid-template-columns: 90px 100px 1fr auto;
-    align-items: center;
-    gap: 16px;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.15s;
-  }
-
-  .workout-row:last-child { border-bottom: none; }
-  .workout-row:hover { background: rgba(255,255,255,0.02); }
-  .workout-row.completed { opacity: 0.7; }
-
-  .wr-date {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text3);
-    white-space: nowrap;
-  }
-
-  .wr-type {
-    font-size: 12px;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 3px;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .type-run { background: rgba(200,241,53,0.1); color: var(--accent); border: 1px solid rgba(200,241,53,0.15); }
-  .type-strength { background: rgba(77,159,255,0.1); color: #4d9fff; border: 1px solid rgba(77,159,255,0.15); }
-  .type-rest { background: rgba(255,255,255,0.04); color: var(--text3); border: 1px solid var(--border); }
-  .type-race { background: rgba(255,193,53,0.15); color: var(--accent2); border: 1px solid rgba(255,193,53,0.3); }
-
-  .wr-desc {
-    font-size: 13px;
-    color: var(--text2);
-  }
-
-  .wr-desc strong { color: var(--text); font-weight: 500; }
-
-  /* ── LOG INPUT AREA ── */
-  .wr-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .check-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text3);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    transition: all 0.2s;
-    flex-shrink: 0;
-  }
-
-  .check-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .check-btn.done { background: var(--accent); border-color: var(--accent); color: #0a0a0a; }
-
-  .log-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 4px 10px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text3);
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .log-btn:hover { border-color: var(--text2); color: var(--text2); }
-  .log-btn.has-log { border-color: var(--info); color: var(--info); }
-
-  /* ── LOG DISPLAY ── */
-  .workout-log {
-    display: none;
-    padding: 14px 20px;
-    background: rgba(255,255,255,0.02);
-    border-bottom: 1px solid var(--border);
-    border-top: 1px dashed var(--border);
-  }
-
-  .workout-log.visible { display: block; }
-
-  .log-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr auto;
-    gap: 8px;
-    align-items: end;
-    flex-wrap: wrap;
-  }
-
-  .log-field label {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text3);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 4px;
-  }
-
-  .log-field input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 7px 10px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .log-field input:focus { border-color: var(--accent); }
-  .log-field input::placeholder { color: var(--text3); }
-
-  .log-result {
-    margin-top: 12px;
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .log-chip {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text2);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 3px 10px;
-  }
-
-  .log-chip span { color: var(--accent); }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(4px);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 28px;
-    width: 90%;
-    max-width: 480px;
-  }
-
-  .modal-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 18px;
-    margin-bottom: 6px;
-  }
-
-  .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
-
-  .modal-field { margin-bottom: 14px; }
-  .modal-field label { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--text2); margin-bottom: 5px; }
-  .modal-field input, .modal-field textarea {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 9px 12px;
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s;
-    resize: vertical;
-  }
-  .modal-field input:focus, .modal-field textarea:focus { border-color: var(--accent); }
-  .modal-field input::placeholder, .modal-field textarea::placeholder { color: var(--text3); }
-
-  .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
-
-  .btn-danger { background: transparent; color: var(--danger); border: 1px solid rgba(255,77,77,0.3); border-radius: var(--radius); padding: 8px 16px; font-family: var(--font-mono); font-size: 12px; cursor: pointer; }
-  .btn-danger:hover { background: rgba(255,77,77,0.08); }
-
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 20px 32px;
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text3);
-    margin-top: 48px;
-  }
-
-  footer span { color: var(--accent); }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 700px) {
-    main { padding: 16px; }
-    header { padding: 14px 16px; }
-    .workout-row { grid-template-columns: 80px 90px 1fr; }
-    .wr-actions { grid-column: 1/-1; justify-content: flex-end; }
-    .log-form { grid-template-columns: 1fr 1fr; }
-    .countdown-section { flex-direction: column; align-items: flex-start; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  }
+:root {
+  --bg:#080810; --s1:#0f0f1a; --s2:#161625; --s3:#1e1e30;
+  --border:#2a2a40; --border2:#363655;
+  --acc:#7DF9AA; --acc2:#F9D27D; --acc3:#7DB8F9;
+  --danger:#F97D7D; --warn:#F9C47D;
+  --text:#eeeef5; --t2:#9090a8; --t3:#55556a;
+  --r:8px;
+  --ff-display:'Unbounded',sans-serif;
+  --ff-mono:'DM Mono',monospace;
+  --ff-body:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-body);font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:0.15;pointer-events:none;z-index:0}
+
+header{position:sticky;top:0;z-index:200;background:rgba(8,8,16,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-family:var(--ff-display);font-weight:900;font-size:13px;letter-spacing:0.06em;display:flex;align-items:center;gap:10px}
+.logo-ring{width:9px;height:9px;border-radius:50%;background:var(--acc);animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 8px var(--acc)}50%{box-shadow:0 0 20px var(--acc),0 0 40px rgba(125,249,170,0.3)}}
+.hd-tag{font-family:var(--ff-mono);font-size:11px;color:var(--t2)}
+.hd-tag span{color:var(--acc)}
+
+main{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:32px}
+
+.race-hero{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:32px;margin-bottom:24px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;overflow:hidden;position:relative}
+.race-hero::after{content:'10K';position:absolute;right:0px;top:-16px;font-family:var(--ff-display);font-size:110px;font-weight:900;color:var(--border);line-height:1;pointer-events:none;opacity:0.6}
+.rh-title{font-family:var(--ff-display);font-size:22px;font-weight:900;letter-spacing:-0.02em;line-height:1.15;margin-bottom:8px}
+.rh-title span{color:var(--acc)}
+.rh-sub{font-size:13px;color:var(--t2);margin-bottom:16px}
+.rh-paces{display:flex;gap:24px;flex-wrap:wrap}
+.rh-pace-val{font-family:var(--ff-mono);font-size:18px;font-weight:500;color:var(--acc);display:block;line-height:1}
+.rh-pace-val.y{color:var(--acc2)}
+.rh-pace-val.b{color:var(--acc3)}
+.rh-pace-label{font-size:11px;color:var(--t3);display:block;margin-top:3px}
+.countdown{display:flex;gap:8px;align-items:center;position:relative;z-index:1}
+.cd-b{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;text-align:center;min-width:54px}
+.cd-n{font-family:var(--ff-display);font-size:20px;font-weight:700;color:var(--acc);display:block;line-height:1}
+.cd-l{font-size:9px;color:var(--t3);letter-spacing:0.1em;margin-top:3px;display:block}
+.cd-sep{font-family:var(--ff-mono);font-size:16px;color:var(--border2)}
+
+.analysis-banner{border-radius:var(--r);padding:16px 20px;margin-bottom:24px;border:1px solid;display:flex;align-items:flex-start;gap:14px}
+.analysis-banner.ok{background:rgba(125,249,170,0.05);border-color:rgba(125,249,170,0.25)}
+.analysis-banner.warn{background:rgba(249,196,125,0.05);border-color:rgba(249,196,125,0.25)}
+.analysis-banner.danger{background:rgba(249,125,125,0.05);border-color:rgba(249,125,125,0.25)}
+.analysis-banner.neutral{background:var(--s1);border-color:var(--border)}
+.ab-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.ab-title{font-family:var(--ff-display);font-size:11px;font-weight:700;letter-spacing:0.05em;margin-bottom:4px}
+.ab-title.ok{color:var(--acc)}.ab-title.warn{color:var(--acc2)}.ab-title.danger{color:var(--danger)}.ab-title.neutral{color:var(--t2)}
+.ab-text{font-size:13px;color:var(--t2);line-height:1.6}
+.ab-text strong{color:var(--text);font-weight:500}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.stat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden;transition:border-color 0.2s}
+.stat:hover{border-color:var(--border2)}
+.stat-lbl{font-family:var(--ff-mono);font-size:10px;color:var(--t3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px}
+.stat-val{font-family:var(--ff-display);font-size:22px;font-weight:700;line-height:1;color:var(--text)}
+.stat-val.g{color:var(--acc)}.stat-val.y{color:var(--acc2)}.stat-val.r{color:var(--danger)}.stat-val.b{color:var(--acc3)}
+.stat-sub{font-size:11px;color:var(--t3);margin-top:5px}
+.stat-trend{font-family:var(--ff-mono);font-size:11px;margin-top:4px}
+.stat-trend.up{color:var(--acc)}.stat-trend.down{color:var(--danger)}.stat-trend.flat{color:var(--t3)}
+
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.chart-title{font-family:var(--ff-display);font-size:10px;font-weight:700;letter-spacing:0.06em;color:var(--t2);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.chart-title span{color:var(--t3);font-family:var(--ff-mono);font-size:10px;font-weight:400}
+.chart-wrap{height:180px;position:relative}
+
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:10px}
+.gauge-ring{position:relative;width:130px;height:130px}
+.gauge-ring svg{transform:rotate(-90deg)}
+.gauge-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge-val{font-family:var(--ff-mono);font-size:20px;font-weight:500;color:var(--text);line-height:1}
+.gauge-lbl{font-size:10px;color:var(--t3);margin-top:3px}
+.gauge-targets{display:flex;gap:16px}
+.gt-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)}
+.gt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.week-track-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.wt-grid{display:flex;gap:6px;flex-wrap:wrap}
+.wt-item{flex:1;min-width:80px;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;transition:border-color 0.2s;cursor:default}
+.wt-item.active-week{border-color:var(--acc3)}
+.wt-item.done-week{border-color:rgba(125,249,170,0.35)}
+.wt-week-num{font-family:var(--ff-mono);font-size:10px;color:var(--t3);margin-bottom:5px}
+.wt-dots{display:flex;gap:3px;margin-bottom:5px}
+.wt-dot{width:9px;height:9px;border-radius:2px;background:var(--s3)}
+.wt-dot.done{background:var(--acc)}.wt-dot.partial{background:var(--acc2)}
+.wt-pct{font-family:var(--ff-mono);font-size:11px;color:var(--t2)}
+
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-title{font-family:var(--ff-display);font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--t2);display:flex;align-items:center;gap:8px}
+.sec-title::before{content:'';width:3px;height:14px;background:var(--acc);border-radius:2px;display:block}
+
+.week-block{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;transition:border-color 0.2s}
+.week-block:hover{border-color:var(--border2)}
+.week-head{background:var(--s2);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.wh-left{display:flex;align-items:center;gap:10px}
+.wh-title{font-family:var(--ff-display);font-size:11px;font-weight:700;letter-spacing:0.02em}
+.phase-pill{font-family:var(--ff-mono);font-size:9px;padding:2px 8px;border-radius:3px;letter-spacing:0.05em;font-weight:500}
+.ph-base{background:rgba(125,184,249,0.12);color:var(--acc3);border:1px solid rgba(125,184,249,0.2)}
+.ph-dev{background:rgba(125,249,170,0.1);color:var(--acc);border:1px solid rgba(125,249,170,0.2)}
+.ph-peak{background:rgba(249,196,125,0.1);color:var(--acc2);border:1px solid rgba(249,196,125,0.2)}
+.ph-taper{background:rgba(249,125,125,0.1);color:var(--danger);border:1px solid rgba(249,125,125,0.2)}
+.wh-right{display:flex;align-items:center;gap:12px}
+.wh-vol{font-family:var(--ff-mono);font-size:11px;color:var(--t3)}
+.wh-status{font-size:11px;font-family:var(--ff-mono)}
+.wh-status.ok{color:var(--acc)}.wh-status.partial{color:var(--acc2)}.wh-status.none{color:var(--t3)}
+.wh-chevron{color:var(--t3);font-size:11px;transition:transform 0.2s}
+.wh-chevron.open{transform:rotate(180deg)}
+.week-body{display:none}
+.week-body.open{display:block}
+
+.wr{display:grid;grid-template-columns:86px 110px 1fr auto;gap:14px;align-items:start;padding:13px 20px;border-bottom:1px solid var(--border);transition:background 0.15s}
+.wr:last-child{border-bottom:none}
+.wr:hover{background:rgba(255,255,255,0.015)}
+.wr.done-row{opacity:0.6}
+.wr-date{font-family:var(--ff-mono);font-size:11px;color:var(--t3);white-space:nowrap;padding-top:2px}
+.wr-badge{font-size:10px;font-weight:500;padding:3px 9px;border-radius:3px;text-align:center;white-space:nowrap;font-family:var(--ff-mono);margin-top:1px}
+.b-run{background:rgba(125,249,170,0.08);color:var(--acc);border:1px solid rgba(125,249,170,0.15)}
+.b-str{background:rgba(125,184,249,0.08);color:var(--acc3);border:1px solid rgba(125,184,249,0.15)}
+.b-rest{background:rgba(255,255,255,0.03);color:var(--t3);border:1px solid var(--border)}
+.b-race{background:rgba(249,196,125,0.12);color:var(--acc2);border:1px solid rgba(249,196,125,0.3)}
+.wr-desc{font-size:13px;color:var(--t2)}
+.wr-desc strong{color:var(--text);font-weight:500}
+.wr-feedback{font-size:11px;margin-top:4px;font-family:var(--ff-mono)}
+.wr-feedback.ok{color:var(--acc)}.wr-feedback.warn{color:var(--acc2)}.wr-feedback.danger{color:var(--danger)}.wr-feedback.neutral{color:var(--t3)}
+.wr-log-summary{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.wr-chip{font-family:var(--ff-mono);font-size:10px;color:var(--acc3);background:rgba(125,184,249,0.08);border:1px solid rgba(125,184,249,0.15);border-radius:3px;padding:2px 7px}
+.wr-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;padding-top:1px}
+.chk{width:26px;height:26px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all 0.15s;flex-shrink:0}
+.chk:hover{border-color:var(--acc);color:var(--acc)}
+.chk.on{background:var(--acc);border-color:var(--acc);color:#051a0d}
+.log-toggle{background:transparent;border:1px solid var(--border);border-radius:4px;padding:4px 9px;font-family:var(--ff-mono);font-size:10px;color:var(--t3);cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.log-toggle:hover{border-color:var(--border2);color:var(--t2)}
+.log-toggle.has{border-color:rgba(125,249,170,0.3);color:var(--acc)}
+
+.log-panel{display:none;padding:16px 20px;background:rgba(125,249,170,0.015);border-top:1px dashed var(--border)}
+.log-panel.open{display:block}
+.log-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:10px}
+.lf label{display:block;font-family:var(--ff-mono);font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px}
+.lf input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:var(--ff-mono);font-size:12px;color:var(--text);outline:none;transition:border-color 0.2s}
+.lf input:focus{border-color:var(--acc)}
+.lf input::placeholder{color:var(--t3)}
+.lf-notes{grid-column:1/-1}
+.log-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px}
+.log-analysis-area{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.la{border-radius:5px;padding:8px 12px;font-size:12px;line-height:1.6;border:1px solid}
+.la.ok{background:rgba(125,249,170,0.05);border-color:rgba(125,249,170,0.2);color:var(--acc)}
+.la.warn{background:rgba(249,196,125,0.05);border-color:rgba(249,196,125,0.2);color:var(--acc2)}
+.la.danger{background:rgba(249,125,125,0.05);border-color:rgba(249,125,125,0.2);color:var(--danger)}
+.la.info{background:rgba(125,184,249,0.05);border-color:rgba(125,184,249,0.2);color:var(--acc3)}
+
+.btn{background:var(--acc);color:#051a0d;border:none;border-radius:6px;padding:8px 16px;font-family:var(--ff-mono);font-size:12px;font-weight:500;cursor:pointer;transition:opacity 0.2s,transform 0.1s}
+.btn:hover{opacity:0.85}
+.btn:active{transform:scale(0.97)}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--border);border-radius:6px;padding:7px 14px;font-family:var(--ff-mono);font-size:11px;cursor:pointer;transition:all 0.2s}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-danger-ghost{background:transparent;color:var(--danger);border:1px solid rgba(249,125,125,0.2);border-radius:6px;padding:6px 12px;font-family:var(--ff-mono);font-size:11px;cursor:pointer}
+
+footer{border-top:1px solid var(--border);padding:20px 32px;text-align:center;font-family:var(--ff-mono);font-size:11px;color:var(--t3);position:relative;z-index:1;margin-top:40px}
+footer span{color:var(--acc)}
+
+@media(max-width:720px){
+  main{padding:16px}header{padding:0 16px}
+  .wr{grid-template-columns:70px 90px 1fr;gap:8px}
+  .wr-actions{grid-column:3/4;justify-content:flex-end}
+  .race-hero{grid-template-columns:1fr}.race-hero::after{display:none}
+  .countdown{flex-wrap:wrap;justify-content:flex-start}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .charts-row{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">
-    <div class="logo-dot"></div>
-    Londrina Run
-  </div>
-  <div class="header-meta">
-    Maratona de Londrina · 10km<br>
-    Meta: <span>sub 55min</span> · Alvo: <span>~50min</span>
-  </div>
+  <div class="logo"><div class="logo-ring"></div>LONDRINA RUN</div>
+  <div class="hd-tag">10km · Meta <span>sub 55min</span> · Alvo <span>~50min</span></div>
 </header>
 
 <main>
 
-  <!-- COUNTDOWN -->
-  <div class="countdown-section">
-    <div class="countdown-left">
-      <h1>Faltam <span id="days-left">--</span> dias<br>para a prova</h1>
-      <p>05 de julho de 2026 · Londrina, PR</p>
-    </div>
-    <div class="countdown-blocks">
-      <div class="cd-block">
-        <span class="cd-num" id="cd-d">--</span>
-        <span class="cd-label">dias</span>
+<div class="race-hero">
+  <div>
+    <div class="rh-title">Maratona de <span>Londrina</span><br>05 de Julho de 2026</div>
+    <div class="rh-sub">Plano de 7 semanas · 3× corrida + 1× força por semana</div>
+    <div class="rh-paces">
+      <div>
+        <span class="rh-pace-val">5:30/km</span>
+        <span class="rh-pace-label">pace sub 55min</span>
       </div>
-      <div class="cd-sep">:</div>
-      <div class="cd-block">
-        <span class="cd-num" id="cd-h">--</span>
-        <span class="cd-label">horas</span>
+      <div>
+        <span class="rh-pace-val y">5:00/km</span>
+        <span class="rh-pace-label">pace sub 50min</span>
       </div>
-      <div class="cd-sep">:</div>
-      <div class="cd-block">
-        <span class="cd-num" id="cd-m">--</span>
-        <span class="cd-label">min</span>
-      </div>
-      <div class="cd-sep">:</div>
-      <div class="cd-block">
-        <span class="cd-num" id="cd-s">--</span>
-        <span class="cd-label">seg</span>
+      <div>
+        <span class="rh-pace-val b" id="hero-best-pace">--</span>
+        <span class="rh-pace-label">seu melhor pace</span>
       </div>
     </div>
   </div>
-
-  <!-- STATS -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-label">Treinos feitos</div>
-      <div class="stat-value accent" id="st-done">0</div>
-      <div class="stat-sub" id="st-done-sub">de 0 planejados</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Km acumulados</div>
-      <div class="stat-value" id="st-km">0</div>
-      <div class="stat-sub">quilômetros rodados</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Melhor pace</div>
-      <div class="stat-value accent2" id="st-pace">--</div>
-      <div class="stat-sub">min/km no plano</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Semana atual</div>
-      <div class="stat-value" id="st-week">--</div>
-      <div class="stat-sub" id="st-phase">fase de preparação</div>
-    </div>
-  </div>
-
-  <!-- PROGRESS -->
-  <div class="progress-section">
-    <div class="progress-header">
-      <div class="progress-title">Progresso do plano</div>
-      <div class="progress-pct" id="pct-label">0%</div>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-    </div>
-    <div class="week-dots" id="week-dots"></div>
-  </div>
-
-  <!-- PLAN -->
-  <div class="section-header">
-    <div class="section-title">Plano de treinos</div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-outline" onclick="expandAll()">Expandir tudo</button>
-      <button class="btn" onclick="openAddLog()">+ Adicionar treino</button>
-    </div>
-  </div>
-
-  <div id="plan-container"></div>
-
-</main>
-
-<footer>
-  Londrina Run · Plano 19 mai → 05 jul 2026 · <span>sub 55min</span>
-</footer>
-
-<!-- MODAL: Add / Edit Log -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" id="modal-title">Registrar treino</div>
-    <div class="modal-sub" id="modal-sub">Preencha os dados do treino executado.</div>
-    <div class="modal-row">
-      <div class="modal-field">
-        <label>Distância (km)</label>
-        <input type="number" step="0.01" id="inp-dist" placeholder="ex: 6.2" />
-      </div>
-      <div class="modal-field">
-        <label>Pace (min:seg/km)</label>
-        <input type="text" id="inp-pace" placeholder="ex: 6:10" />
-      </div>
-    </div>
-    <div class="modal-row">
-      <div class="modal-field">
-        <label>Duração (min)</label>
-        <input type="number" step="1" id="inp-dur" placeholder="ex: 42" />
-      </div>
-      <div class="modal-field">
-        <label>Elevação (m)</label>
-        <input type="number" step="1" id="inp-elev" placeholder="ex: 45" />
-      </div>
-    </div>
-    <div class="modal-field">
-      <label>Observações</label>
-      <textarea id="inp-notes" rows="2" placeholder="Como foi? Sentiu bem? Dor? Clima?"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-danger" id="btn-clear-log" onclick="clearCurrentLog()" style="display:none">Apagar registro</button>
-      <button class="btn-outline" onclick="closeModal()">Cancelar</button>
-      <button class="btn" onclick="saveLog()">Salvar</button>
-    </div>
+  <div class="countdown">
+    <div class="cd-b"><span class="cd-n" id="cd-d">--</span><span class="cd-l">DIAS</span></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-b"><span class="cd-n" id="cd-h">--</span><span class="cd-l">HRS</span></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-b"><span class="cd-n" id="cd-m">--</span><span class="cd-l">MIN</span></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-b"><span class="cd-n" id="cd-s">--</span><span class="cd-l">SEG</span></div>
   </div>
 </div>
 
-<script>
-// ── DATA: PLAN ──────────────────────────────────────────────────────
-const RACE_DATE = new Date('2026-07-05T08:00:00');
+<div class="analysis-banner neutral" id="analysis-banner">
+  <div class="ab-icon">📊</div>
+  <div class="ab-content">
+    <div class="ab-title neutral">AGUARDANDO DADOS</div>
+    <div class="ab-text">Registre seus primeiros treinos para receber análise personalizada do seu progresso em relação às metas.</div>
+  </div>
+</div>
 
-const PLAN = [
-  {
-    week: 1, label: 'Semana 1 · 19–25 mai', phase: 'base', phaseLabel: 'Base aeróbica', vol: '~22km',
-    workouts: [
-      { id:'w1d1', date:'19/05', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>5km</strong> · pace 6:30–6:50/km · ritmo confortável' },
-      { id:'w1d2', date:'20/05', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito corpo · 30–40min · sem equipamento' },
-      { id:'w1d3', date:'22/05', day:'Qui', type:'run', typeLabel:'Corrida + strides', desc:'<strong>6km</strong> · 6:30/km + 4×80m acelerados ao final' },
-      { id:'w1d4', date:'24/05', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>10km</strong> · 6:40–7:00/km · sem pressão de pace' },
-    ]
-  },
-  {
-    week: 2, label: 'Semana 2 · 26 mai–01 jun', phase: 'base', phaseLabel: 'Base aeróbica', vol: '~24km',
-    workouts: [
-      { id:'w2d1', date:'26/05', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>6km</strong> · 6:30/km · fácil e constante' },
-      { id:'w2d2', date:'27/05', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito corpo · 35–40min' },
-      { id:'w2d3', date:'29/05', day:'Qui', type:'run', typeLabel:'Tempo run', desc:'<strong>7km</strong> · 2km aquec. + 3km a 5:40/km + 2km volta' },
-      { id:'w2d4', date:'31/05', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>11km</strong> · 6:30–6:45/km · constante' },
-    ]
-  },
-  {
-    week: 3, label: 'Semana 3 · 02–08 jun', phase: 'dev', phaseLabel: 'Desenvolvimento de velocidade', vol: '~25km',
-    workouts: [
-      { id:'w3d1', date:'02/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>6km</strong> · 6:20/km · recuperação ativa' },
-      { id:'w3d2', date:'03/06', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito + plyometria · 40min' },
-      { id:'w3d3', date:'05/06', day:'Qui', type:'run', typeLabel:'Intervalado', desc:'<strong>6×800m</strong> · pace 5:10–5:20/km · 90s recuperação' },
-      { id:'w3d4', date:'07/06', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>12km</strong> · 6:20–6:40/km · 2km finais a 5:50' },
-    ]
-  },
-  {
-    week: 4, label: 'Semana 4 · 09–15 jun', phase: 'dev', phaseLabel: 'Desenvolvimento de velocidade', vol: '~26km',
-    workouts: [
-      { id:'w4d1', date:'09/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>6km</strong> · 6:20/km · fácil' },
-      { id:'w4d2', date:'10/06', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito + plyometria · 40min' },
-      { id:'w4d3', date:'12/06', day:'Qui', type:'run', typeLabel:'Tempo run', desc:'<strong>8km</strong> · 2km aquec. + 4km a 5:30/km + 2km volta' },
-      { id:'w4d4', date:'14/06', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>12km</strong> · 6:10–6:30/km · 3km finais a 5:40' },
-    ]
-  },
-  {
-    week: 5, label: 'Semana 5 · 16–22 jun', phase: 'peak', phaseLabel: 'Simulação de prova', vol: '~24km',
-    workouts: [
-      { id:'w5d1', date:'16/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>5km</strong> · 6:20/km · leve e solto' },
-      { id:'w5d2', date:'17/06', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito moderado · 35min' },
-      { id:'w5d3', date:'19/06', day:'Qui', type:'run', typeLabel:'Intervalado', desc:'<strong>6×1km</strong> · pace 5:10/km · 2min recuperação' },
-      { id:'w5d4', date:'21/06', day:'Sáb', type:'run', typeLabel:'Simulado 8km', desc:'<strong>8km</strong> · pace meta: 5:30–5:40/km · esforço real de prova' },
-    ]
-  },
-  {
-    week: 6, label: 'Semana 6 · 23–29 jun', phase: 'peak', phaseLabel: 'Simulação de prova', vol: '~22km',
-    workouts: [
-      { id:'w6d1', date:'23/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>5km</strong> · 6:30/km · recuperação' },
-      { id:'w6d2', date:'24/06', day:'Ter', type:'strength', typeLabel:'Força', desc:'Circuito leve · 30min' },
-      { id:'w6d3', date:'26/06', day:'Qui', type:'run', typeLabel:'Tempo run', desc:'<strong>7km</strong> · 2km aquec. + 3km a 5:20–5:30/km + 2km volta' },
-      { id:'w6d4', date:'28/06', day:'Sáb', type:'run', typeLabel:'Corrida longa', desc:'<strong>10km</strong> · 6:00–6:20/km · 3km finais a 5:30' },
-    ]
-  },
-  {
-    week: 7, label: 'Semana 7 · 30 jun–05 jul', phase: 'taper', phaseLabel: 'Taper', vol: '~13km',
-    workouts: [
-      { id:'w7d1', date:'30/06', day:'Seg', type:'run', typeLabel:'Corrida leve', desc:'<strong>5km</strong> · 6:30/km · solto e sem pressão' },
-      { id:'w7d2', date:'01/07', day:'Ter', type:'rest', typeLabel:'Descanso', desc:'Alongamento e descanso ativo — sem força esta semana' },
-      { id:'w7d3', date:'03/07', day:'Qui', type:'run', typeLabel:'Ativação', desc:'<strong>3km</strong> · 6:00/km + 4×100m no pace de prova' },
-      { id:'w7d4', date:'05/07', day:'Sáb', type:'race', typeLabel:'PROVA!', desc:'<strong>Maratona de Londrina · 10km</strong> · Boa corrida! 🏃' },
-    ]
-  },
+<div class="stats-grid">
+  <div class="stat"><div class="stat-lbl">Treinos feitos</div><div class="stat-val g" id="st-done">0</div><div class="stat-sub" id="st-done-sub">de 0 planejados</div></div>
+  <div class="stat"><div class="stat-lbl">Km acumulados</div><div class="stat-val b" id="st-km">0.0</div><div class="stat-sub" id="st-km-sub">meta do plano: ~156km</div></div>
+  <div class="stat"><div class="stat-lbl">Melhor pace</div><div class="stat-val" id="st-pace">--</div><div class="stat-trend flat" id="st-pace-trend">nenhum treino registrado</div></div>
+  <div class="stat"><div class="stat-lbl">Pace médio</div><div class="stat-val" id="st-avg-pace">--</div><div class="stat-trend flat" id="st-avg-trend">nenhum treino registrado</div></div>
+  <div class="stat"><div class="stat-lbl">Evolução do pace</div><div class="stat-val" id="st-evolution">--</div><div class="stat-trend flat" id="st-evo-detail">primeiros vs últimos</div></div>
+  <div class="stat"><div class="stat-lbl">Semana atual</div><div class="stat-val y" id="st-week">--</div><div class="stat-sub" id="st-phase">--</div></div>
+</div>
+
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-title">EVOLUÇÃO DO PACE <span>min/km por treino</span></div>
+    <div class="chart-wrap"><canvas id="chart-pace"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">DISTÂNCIA POR TREINO <span>km</span></div>
+    <div class="chart-wrap"><canvas id="chart-dist"></canvas></div>
+  </div>
+</div>
+
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-title">PACE ATUAL vs METAS</div>
+    <div class="gauge-wrap">
+      <div class="gauge-ring">
+        <svg width="130" height="130" viewBox="0 0 130 130">
+          <circle cx="65" cy="65" r="54" fill="none" stroke="var(--s3)" stroke-width="10"/>
+          <circle cx="65" cy="65" r="54" fill="none" stroke="var(--acc3)" stroke-width="10" stroke-dasharray="339.3" stroke-dashoffset="339.3" id="gauge-arc" stroke-linecap="round" style="transition:stroke-dashoffset 0.8s ease,stroke 0.4s"/>
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-val" id="gauge-val">--</div>
+          <div class="gauge-lbl">pace médio</div>
+        </div>
+      </div>
+      <div class="gauge-targets">
+        <div class="gt-item"><div class="gt-dot" style="background:var(--acc)"></div>5:30 (sub 55)</div>
+        <div class="gt-item"><div class="gt-dot" style="background:var(--acc2)"></div>5:00 (sub 50)</div>
+      </div>
+    </div>
+  </div>
+  <div class="week-track-card">
+    <div class="chart-title" style="margin-bottom:14px">PROGRESSO SEMANAL</div>
+    <div class="wt-grid" id="week-track"></div>
+  </div>
+</div>
+
+<div class="sec-header">
+  <div class="sec-title">Plano de treinos</div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-ghost" onclick="toggleAll()">Expandir tudo</button>
+  </div>
+</div>
+
+<div id="plan-container"></div>
+
+</main>
+
+<footer>LONDRINA RUN · Plano 19 mai → 05 jul 2026 · Meta <span>sub 55min</span> · Alvo <span>~50min</span></footer>
+
+<script>
+const RACE_DATE=new Date('2026-07-05T08:00:00');
+const T55=330,T50=300;
+
+const PLAN=[
+  {week:1,label:'Semana 1 · 19–25 mai',phase:'base',phaseLabel:'Base aeróbica',vol:'~22km',workouts:[
+    {id:'w1d1',date:'19/05',day:'Seg',type:'run',badge:'Corrida leve',desc:'<strong>5km</strong> · 6:30–6:50/km · ritmo confortável',td:5,tp:410,tol:35},
+    {id:'w1d2',date:'20/05',day:'Ter',type:'str',badge:'Força',desc:'Circuito corpo · 30–40min · sem equipamento',td:null,tp:null},
+    {id:'w1d3',date:'22/05',day:'Qui',type:'run',badge:'Corrida + strides',desc:'<strong>6km</strong> · 6:30/km + 4×80m acelerados',td:6,tp:390,tol:35},
+    {id:'w1d4',date:'24/05',day:'Sáb',type:'run',badge:'Corrida longa',desc:'<strong>10km</strong> · 6:40–7:00/km · sem pressão',td:10,tp:420,tol:35},
+  ]},
+  {week:2,label:'Semana 2 · 26 mai–01 jun',phase:'base',phaseLabel:'Base aeróbica',vol:'~24km',workouts:[
+    {id:'w2d1',date:'26/05',day:'Seg',type:'run',badge:'Corrida leve',desc:'<strong>6km</strong> · 6:30/km · fácil e constante',td:6,tp:390,tol:35},
+    {id:'w2d2',date:'27/05',day:'Ter',type:'str',badge:'Força',desc:'Circuito corpo · 35–40min',td:null,tp:null},
+    {id:'w2d3',date:'29/05',day:'Qui',type:'run',badge:'Tempo run',desc:'<strong>7km</strong> · 2km aquec. + 3km a 5:40/km + 2km volta',td:7,tp:360,tol:25},
+    {id:'w2d4',date:'31/05',day:'Sáb',type:'run',badge:'Corrida longa',desc:'<strong>11km</strong> · 6:30–6:45/km · constante',td:11,tp:405,tol:25},
+  ]},
+  {week:3,label:'Semana 3 · 02–08 jun',phase:'dev',phaseLabel:'Velocidade',vol:'~25km',workouts:[
+    {id:'w3d1',date:'02/06',day:'Seg',type:'run',badge:'Corrida leve',desc:'<strong>6km</strong> · 6:20/km · recuperação ativa',td:6,tp:380,tol:35},
+    {id:'w3d2',date:'03/06',day:'Ter',type:'str',badge:'Força',desc:'Circuito + plyometria · 40min',td:null,tp:null},
+    {id:'w3d3',date:'05/06',day:'Qui',type:'run',badge:'Intervalado',desc:'<strong>6×800m</strong> · pace 5:10–5:20/km · 90s recuperação',td:6,tp:315,tol:20},
+    {id:'w3d4',date:'07/06',day:'Sáb',type:'run',badge:'Corrida longa',desc:'<strong>12km</strong> · 6:20–6:40/km · 2km finais a 5:50',td:12,tp:390,tol:25},
+  ]},
+  {week:4,label:'Semana 4 · 09–15 jun',phase:'dev',phaseLabel:'Velocidade',vol:'~26km',workouts:[
+    {id:'w4d1',date:'09/06',day:'Seg',type:'run',badge:'Corrida leve',desc:'<strong>6km</strong> · 6:20/km · fácil',td:6,tp:380,tol:35},
+    {id:'w4d2',date:'10/06',day:'Ter',type:'str',badge:'Força',desc:'Circuito + plyometria · 40min',td:null,tp:null},
+    {id:'w4d3',date:'12/06',day:'Qui',type:'run',badge:'Tempo run',desc:'<strong>8km</strong> · 2km aquec. + 4km a 5:30/km + 2km volta',td:8,tp:345,tol:20},
+    {id:'w4d4',date:'14/06',day:'Sáb',type:'run',badge:'Corrida longa',desc:'<strong>12km</strong> · 6:10–6:30/km · 3km finais a 5:40',td:12,tp:375,tol:25},
+  ]},
+  {week:5,label:'Semana 5 · 16–22 jun',phase:'peak',phaseLabel:'Simulação',vol:'~24km',workouts:[
+    {id:'w5d1',date:'16/06',day:'Seg',type:'run',badge:'Corrida leve',desc:'<strong>5km</strong> · 6:20/km · leve e solto',td:5,tp:380,tol:35},
+    {id:'w5d2',date:'17/06',day:'Ter',type:'str',badge:'Força',desc:'Circuito moderado · 35min',td:null,tp:null},
+    {id:'w5d3',date:'19/06',day:'Qui',type:'run',badge:'Intervalado',desc:'<strong>6×1km</strong> · pace 5:10/km · 2min recuperação',td:6,tp:310,tol:20},
+    {id:'w5d4',date:'21/06',day:'Sáb',type:'run',badge:'Simulado 8km',desc:'<strong>8km</strong> · pace meta: 5:30–5:40/km · esforço real',td:8,tp:335,tol:15},
+  ]},
+  {week:6,label:'Semana 6 · 23–29 jun',phase:'peak',phaseLabel:'Simulação',vol:'~22km',workouts:[
+    {id:'w6d1',date:'23/06',day:'Seg',type:'run',badge:'Corrida leve',desc:'<strong>5km</strong> · 6:30/km · recuperação',td:5,tp:390,tol:35},
+    {id:'w6d2',date:'24/06',day:'Ter',type:'str',badge:'Força',desc:'Circuito leve · 30min',td:null,tp:null},
+    {id:'w6d3',date:'26/06',day:'Qui',type:'run',badge:'Tempo run',desc:'<strong>7km</strong> · 2km aquec. + 3km a 5:20–5:30/km + 2km volta',td:7,tp:330,tol:15},
+    {id:'w6d4',date:'28/06',day:'Sáb',type:'run',badge:'Corrida longa',desc:'<strong>10km</strong> · 6:00–6:20/km · 3km finais a 5:30',td:10,tp:365,tol:20},
+  ]},
+  {week:7,label:'Semana 7 · 30 jun–05 jul',phase:'taper',phaseLabel:'Taper',vol:'~13km',workouts:[
+    {id:'w7d1',date:'30/06',day:'Seg',type:'run',badge:'Corrida leve',desc:'<strong>5km</strong> · 6:30/km · solto e sem pressão',td:5,tp:390,tol:45},
+    {id:'w7d2',date:'01/07',day:'Ter',type:'rest',badge:'Descanso',desc:'Alongamento e descanso ativo — sem força esta semana',td:null,tp:null},
+    {id:'w7d3',date:'03/07',day:'Qui',type:'run',badge:'Ativação',desc:'<strong>3km</strong> + 4×100m no pace de prova',td:3,tp:360,tol:45},
+    {id:'w7d4',date:'05/07',day:'Sáb',type:'race',badge:'PROVA!',desc:'<strong>Maratona de Londrina · 10km</strong> · Boa corrida! 🏃',td:10,tp:330,tol:0},
+  ]},
 ];
 
-// ── STATE ────────────────────────────────────────────────────────────
-let state = {};
-let currentModal = null;
+let S={};let allExp=false;let cPace=null,cDist=null;
 
-function loadState() {
-  try { state = JSON.parse(localStorage.getItem('londrina_run_v1') || '{}'); }
-  catch(e) { state = {}; }
-}
+function load(){try{S=JSON.parse(localStorage.getItem('lrun_v2')||'{}');}catch{S={}}}
+function save(){localStorage.setItem('lrun_v2',JSON.stringify(S))}
 
-function saveState() {
-  localStorage.setItem('londrina_run_v1', JSON.stringify(state));
-}
+function p2s(str){if(!str||!str.includes(':'))return null;const p=str.trim().split(':');const m=parseInt(p[0]),s=parseInt(p[1]);if(isNaN(m)||isNaN(s))return null;return m*60+s;}
+function s2p(s){if(!s||isNaN(s))return'--';const m=Math.floor(s/60),sec=Math.round(s%60);return m+':'+(sec<10?'0':'')+sec;}
 
-// ── COUNTDOWN ───────────────────────────────────────────────────────
-function updateCountdown() {
-  const now = new Date();
-  const diff = RACE_DATE - now;
-  if (diff <= 0) {
-    document.getElementById('days-left').textContent = '0';
-    ['cd-d','cd-h','cd-m','cd-s'].forEach(id => document.getElementById(id).textContent = '00');
-    return;
+function analyzeWorkout(w,log){
+  if(!log||(!log.dist&&!log.pace))return[];
+  const res=[];
+  if(w.td&&log.dist){
+    const d=parseFloat(log.dist),diff=d-w.td,pct=Math.abs(diff)/w.td*100;
+    if(diff<-0.5)res.push({t:'warn',msg:`Distância: ${d.toFixed(1)}km de ${w.td}km planejados (${pct.toFixed(0)}% abaixo)`});
+    else if(diff>1.2)res.push({t:'ok',msg:`Excelente! ${d.toFixed(1)}km — ${diff.toFixed(1)}km a mais que o planejado`});
+    else res.push({t:'ok',msg:`Distância ok: ${d.toFixed(1)}km ✓`});
   }
-  const d = Math.floor(diff / 86400000);
-  const h = Math.floor((diff % 86400000) / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  const s = Math.floor((diff % 60000) / 1000);
-  document.getElementById('days-left').textContent = d;
-  document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
-  document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
-  document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
-  document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
-}
-
-// ── RENDER ──────────────────────────────────────────────────────────
-function typeClass(type) {
-  return { run:'type-run', strength:'type-strength', rest:'type-rest', race:'type-race' }[type] || 'type-rest';
-}
-
-function phaseClass(phase) {
-  return 'phase-'+phase;
-}
-
-function renderPlan() {
-  const container = document.getElementById('plan-container');
-  container.innerHTML = '';
-
-  PLAN.forEach(week => {
-    const block = document.createElement('div');
-    block.className = 'week-block';
-    block.id = 'week-'+week.week;
-
-    block.innerHTML = `
-      <div class="week-head">
-        <div class="week-head-title">
-          ${week.label}
-          <span class="phase-badge ${phaseClass(week.phase)}">${week.phaseLabel}</span>
-        </div>
-        <div class="week-head-vol">${week.vol}</div>
-      </div>
-    `;
-
-    week.workouts.forEach(w => {
-      const log = state[w.id] || {};
-      const done = !!log.done;
-
-      const row = document.createElement('div');
-      row.className = 'workout-row' + (done ? ' completed' : '');
-      row.id = 'row-'+w.id;
-
-      const hasLog = log.dist || log.pace || log.dur;
-
-      row.innerHTML = `
-        <div class="wr-date">${w.day} · ${w.date}</div>
-        <div class="wr-type ${typeClass(w.type)}">${w.typeLabel}</div>
-        <div class="wr-desc">${w.desc}</div>
-        <div class="wr-actions">
-          ${w.type !== 'rest' ? `<button class="log-btn ${hasLog?'has-log':''}" onclick="toggleLog('${w.id}')" title="Registrar dados">${hasLog ? '📋 ver log' : '+ log'}</button>` : ''}
-          <button class="check-btn ${done?'done':''}" onclick="toggleDone('${w.id}')" title="${done?'Marcar como não feito':'Marcar como feito'}">
-            ${done ? '✓' : ''}
-          </button>
-        </div>
-      `;
-
-      block.appendChild(row);
-
-      // Log area
-      const logArea = document.createElement('div');
-      logArea.className = 'workout-log';
-      logArea.id = 'log-'+w.id;
-
-      if (hasLog) {
-        logArea.innerHTML = `
-          <div class="log-result">
-            ${log.dist ? `<div class="log-chip"><span>${log.dist}km</span></div>` : ''}
-            ${log.pace ? `<div class="log-chip">pace <span>${log.pace}/km</span></div>` : ''}
-            ${log.dur ? `<div class="log-chip"><span>${log.dur}min</span></div>` : ''}
-            ${log.elev ? `<div class="log-chip">elev <span>${log.elev}m</span></div>` : ''}
-            ${log.notes ? `<div class="log-chip">"${log.notes.substring(0,40)}${log.notes.length>40?'…':''}"</div>` : ''}
-            <button class="log-btn has-log" onclick="openLogModal('${w.id}','${w.typeLabel}','${w.date}')">editar</button>
-          </div>
-        `;
-      } else {
-        logArea.innerHTML = `
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span style="font-size:12px;color:var(--text3);">Nenhum dado registrado ainda</span>
-            <button class="btn" style="font-size:11px;padding:6px 14px;" onclick="openLogModal('${w.id}','${w.typeLabel}','${w.date}')">Registrar agora</button>
-          </div>
-        `;
-      }
-
-      block.appendChild(logArea);
-    });
-
-    container.appendChild(block);
-  });
-}
-
-function toggleLog(id) {
-  const el = document.getElementById('log-'+id);
-  if (!el) return;
-  el.classList.toggle('visible');
-}
-
-function expandAll() {
-  document.querySelectorAll('.workout-log').forEach(el => el.classList.add('visible'));
-}
-
-function toggleDone(id) {
-  if (!state[id]) state[id] = {};
-  state[id].done = !state[id].done;
-  saveState();
-  renderAll();
-}
-
-// ── MODAL ────────────────────────────────────────────────────────────
-function openLogModal(id, typeLabel, date) {
-  currentModal = id;
-  const log = state[id] || {};
-  document.getElementById('modal-title').textContent = typeLabel + ' · ' + date;
-  document.getElementById('modal-sub').textContent = 'Registre os dados do treino executado.';
-  document.getElementById('inp-dist').value = log.dist || '';
-  document.getElementById('inp-pace').value = log.pace || '';
-  document.getElementById('inp-dur').value = log.dur || '';
-  document.getElementById('inp-elev').value = log.elev || '';
-  document.getElementById('inp-notes').value = log.notes || '';
-  const hasLog = log.dist || log.pace;
-  document.getElementById('btn-clear-log').style.display = hasLog ? 'block' : 'none';
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-function openAddLog() {
-  openLogModal('extra_'+Date.now(), 'Treino extra', 'hoje');
-}
-
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('modal-overlay')) {
-    document.getElementById('modal-overlay').classList.remove('open');
-    currentModal = null;
-  }
-}
-
-function saveLog() {
-  if (!currentModal) return;
-  if (!state[currentModal]) state[currentModal] = {};
-  const dist = document.getElementById('inp-dist').value;
-  const pace = document.getElementById('inp-pace').value;
-  const dur = document.getElementById('inp-dur').value;
-  const elev = document.getElementById('inp-elev').value;
-  const notes = document.getElementById('inp-notes').value;
-  if (dist) state[currentModal].dist = parseFloat(dist).toFixed(2);
-  if (pace) state[currentModal].pace = pace;
-  if (dur) state[currentModal].dur = parseInt(dur);
-  if (elev) state[currentModal].elev = parseInt(elev);
-  if (notes) state[currentModal].notes = notes;
-  if (dist || pace) state[currentModal].done = true;
-  saveState();
-  closeModal();
-  renderAll();
-}
-
-function clearCurrentLog() {
-  if (!currentModal || !state[currentModal]) return;
-  const keep = { done: state[currentModal].done };
-  state[currentModal] = keep;
-  saveState();
-  closeModal();
-  renderAll();
-}
-
-// ── STATS ────────────────────────────────────────────────────────────
-function updateStats() {
-  const allWorkouts = PLAN.flatMap(w => w.workouts);
-  const total = allWorkouts.filter(w => w.type !== 'rest').length;
-  const done = allWorkouts.filter(w => (state[w.id] || {}).done).length;
-
-  let km = 0;
-  let bestPace = null;
-  allWorkouts.forEach(w => {
-    const log = state[w.id] || {};
-    if (log.dist) km += parseFloat(log.dist);
-    if (log.pace) {
-      const parts = log.pace.split(':');
-      if (parts.length === 2) {
-        const totalSec = parseInt(parts[0])*60 + parseInt(parts[1]);
-        if (!bestPace || totalSec < bestPace) bestPace = totalSec;
-      }
+  if(w.tp&&log.pace){
+    const actual=p2s(log.pace);
+    if(actual){
+      const diff=actual-w.tp,tol=w.tol||30;
+      if(diff>tol)res.push({t:'warn',msg:`Pace acima da zona: ${s2p(actual)}/km · meta era ${s2p(w.tp)}/km (${diff}s mais lento)`});
+      else if(diff<-tol)res.push({t:'ok',msg:`Pace abaixo da meta! ${s2p(actual)}/km · ${Math.abs(diff)}s mais rápido que o planejado 🔥`});
+      else res.push({t:'ok',msg:`Pace dentro da zona: ${s2p(actual)}/km ✓`});
+      if(actual<=T50)res.push({t:'ok',msg:`Ritmo compatível com sub 50min! 🚀`});
+      else if(actual<=T55)res.push({t:'ok',msg:`Ritmo compatível com sub 55min ✓`});
+      else{const gap=actual-T55;res.push({t:'warn',msg:`Para sub 55 ainda precisa reduzir ${gap}s/km · continue evoluindo!`});}
     }
-  });
-
-  document.getElementById('st-done').textContent = done;
-  document.getElementById('st-done-sub').textContent = 'de ' + total + ' planejados';
-  document.getElementById('st-km').textContent = km.toFixed(1);
-
-  if (bestPace) {
-    const m = Math.floor(bestPace/60);
-    const s = bestPace%60;
-    document.getElementById('st-pace').textContent = m+':'+(s<10?'0':'')+s;
-  } else {
-    document.getElementById('st-pace').textContent = '--';
   }
+  return res;
+}
 
-  // Current week
-  const now = new Date();
-  const start = new Date('2026-05-19');
-  const daysDiff = Math.floor((now - start)/86400000);
-  const currentWeek = Math.min(7, Math.max(1, Math.floor(daysDiff/7)+1));
-  document.getElementById('st-week').textContent = currentWeek <= 7 ? currentWeek + 'ª semana' : 'Prova!';
-  const phases = ['','Base aeróbica','Base aeróbica','Velocidade','Velocidade','Simulação','Simulação','Taper'];
-  document.getElementById('st-phase').textContent = phases[currentWeek] || 'concluído';
+function globalAnalysis(){
+  const allW=PLAN.flatMap(w=>w.workouts);
+  const runLogs=allW.filter(w=>w.type==='run'&&S[w.id]&&S[w.id].pace).map(w=>p2s(S[w.id].pace)).filter(Boolean);
+  if(!runLogs.length)return{s:'neutral',icon:'📊',title:'AGUARDANDO DADOS',text:'Registre seus primeiros treinos para receber análise personalizada do seu progresso em relação às metas.'};
+  const avg=Math.round(runLogs.reduce((a,b)=>a+b,0)/runLogs.length);
+  const best=Math.min(...runLogs);
+  let trend='';
+  if(runLogs.length>=4){
+    const h=Math.floor(runLogs.length/2);
+    const d=runLogs.slice(0,h).reduce((a,b)=>a+b,0)/h-runLogs.slice(-h).reduce((a,b)=>a+b,0)/h;
+    if(d>10)trend=` Tendência de <strong>melhora: ${Math.round(d)}s mais rápido</strong> nos últimos treinos.`;
+    else if(d<-10)trend=` Atenção: pace <strong>subindo nos últimos treinos</strong> — verifique descanso e recuperação.`;
+    else trend=` Pace <strong>estável</strong> nas últimas sessões.`;
+  }
+  if(best<=T50)return{s:'ok',icon:'🚀',title:'ZONA DO SUB 50MIN!',text:`Seu melhor pace: <strong>${s2p(best)}/km</strong> — já dentro da zona sub 50! Média geral: <strong>${s2p(avg)}/km</strong>.${trend} Mantenha a consistência!`};
+  if(avg<=T55)return{s:'ok',icon:'✅',title:'META SUB 55MIN ALCANÇÁVEL',text:`Média atual <strong>${s2p(avg)}/km</strong> — dentro da zona do sub 55! Para sub 50 ainda faltam <strong>${avg-T50}s/km</strong>.${trend}`};
+  if(avg-T55<=60)return{s:'warn',icon:'⚡',title:'PRÓXIMO DA META!',text:`Média atual <strong>${s2p(avg)}/km</strong>. Faltam <strong>${avg-T55}s/km</strong> para sub 55. Foco nos intervalados e tempo runs!${trend}`};
+  return{s:'danger',icon:'🎯',title:'RITMO ACIMA DA META',text:`Média atual <strong>${s2p(avg)}/km</strong>. Precisa reduzir <strong>${avg-T55}s/km</strong> para sub 55. Priorize treinos de qualidade nas próximas semanas.${trend}`};
+}
 
-  // Progress
-  const pct = total > 0 ? Math.round((done/total)*100) : 0;
-  document.getElementById('pct-label').textContent = pct + '%';
-  document.getElementById('progress-fill').style.width = pct + '%';
+function updateStats(){
+  const allW=PLAN.flatMap(w=>w.workouts);
+  const total=allW.filter(w=>w.type!=='rest').length;
+  const done=allW.filter(w=>(S[w.id]||{}).done).length;
+  let km=0;const paceSecs=[];
+  allW.forEach(w=>{const log=S[w.id]||{};if(log.dist)km+=parseFloat(log.dist);if(log.pace){const s=p2s(log.pace);if(s)paceSecs.push(s);}});
+  document.getElementById('st-done').textContent=done;
+  document.getElementById('st-done-sub').textContent='de '+total+' planejados';
+  document.getElementById('st-km').textContent=km.toFixed(1);
+  document.getElementById('st-km-sub').textContent=Math.round(km/156*100)+'% da meta total do plano';
+  if(paceSecs.length){
+    const best=Math.min(...paceSecs),avg=Math.round(paceSecs.reduce((a,b)=>a+b,0)/paceSecs.length);
+    document.getElementById('st-pace').textContent=s2p(best);
+    document.getElementById('hero-best-pace').textContent=s2p(best);
+    document.getElementById('st-pace').className='stat-val '+(best<=T50?'g':best<=T55?'y':'r');
+    const pt=document.getElementById('st-pace-trend');
+    if(best<=T50){pt.textContent='🚀 zona sub 50!';pt.className='stat-trend up';}
+    else if(best<=T55){pt.textContent='✓ zona sub 55';pt.className='stat-trend up';}
+    else{pt.textContent=(best-T55)+'s acima do sub 55';pt.className='stat-trend down';}
+    document.getElementById('st-avg-pace').textContent=s2p(avg);
+    document.getElementById('st-avg-pace').className='stat-val '+(avg<=T50?'g':avg<=T55?'y':'r');
+    const at=document.getElementById('st-avg-trend');
+    if(avg<=T55){at.textContent='✓ meta sub 55!';at.className='stat-trend up';}
+    else{at.textContent='faltam '+(avg-T55)+'s/km p/ sub 55';at.className='stat-trend down';}
+    if(paceSecs.length>=2){
+      const diff=paceSecs[0]-paceSecs[paceSecs.length-1];
+      document.getElementById('st-evolution').textContent=(diff>=0?'-':'+')+(Math.abs(diff))+'s/km';
+      document.getElementById('st-evolution').className='stat-val '+(diff>=0?'g':'r');
+      const ed=document.getElementById('st-evo-detail');
+      ed.textContent=diff>=0?'evoluindo — pace caindo':'atenção — pace subindo';
+      ed.className='stat-trend '+(diff>=0?'up':'down');
+    }
+    updateGauge(avg);
+    document.getElementById('gauge-val').textContent=s2p(avg);
+  }
+  const now=new Date(),start=new Date('2026-05-19');
+  const cw=Math.min(7,Math.max(1,Math.floor((now-start)/86400000/7)+1));
+  document.getElementById('st-week').textContent=cw<=7?cw+'ª':'Prova!';
+  const phases=['','Base aeróbica','Base aeróbica','Velocidade','Velocidade','Simulação','Simulação','Taper'];
+  document.getElementById('st-phase').textContent=phases[cw]||'concluído';
+  const a=globalAnalysis();
+  const b=document.getElementById('analysis-banner');
+  b.className='analysis-banner '+a.s;
+  b.innerHTML=`<div class="ab-icon">${a.icon}</div><div class="ab-content"><div class="ab-title ${a.s}">${a.title}</div><div class="ab-text">${a.text}</div></div>`;
+  renderWeekTrack(cw);
+}
 
-  // Week dots
-  const dotsEl = document.getElementById('week-dots');
-  dotsEl.innerHTML = '';
-  PLAN.forEach(week => {
-    const weekWorkouts = week.workouts.filter(w => w.type !== 'rest' && w.type !== 'race');
-    const weekDone = weekWorkouts.filter(w => (state[w.id]||{}).done).length;
-    let cls = '';
-    if (weekDone === weekWorkouts.length && weekWorkouts.length > 0) cls = 'done';
-    else if (weekDone > 0) cls = 'partial';
-    else if (week.week === currentWeek) cls = 'current';
-    const dot = document.createElement('div');
-    dot.className = 'week-dot ' + cls;
-    dot.title = week.label;
-    dot.textContent = 'S' + week.week;
-    dotsEl.appendChild(dot);
+function updateGauge(avg){
+  const arc=document.getElementById('gauge-arc');if(!arc||!avg)return;
+  const pct=Math.max(0,Math.min(1,(420-avg)/(420-270)));
+  arc.style.strokeDashoffset=339.3-(339.3*pct);
+  arc.style.stroke=avg<=T50?'var(--acc)':avg<=T55?'var(--acc2)':'var(--danger)';
+}
+
+function renderWeekTrack(cw){
+  const el=document.getElementById('week-track');el.innerHTML='';
+  PLAN.forEach(week=>{
+    const rw=week.workouts.filter(w=>w.type!=='rest'&&w.type!=='race');
+    const dw=rw.filter(w=>(S[w.id]||{}).done).length;
+    const pct=rw.length?Math.round(dw/rw.length*100):0;
+    const div=document.createElement('div');
+    div.className='wt-item'+(week.week===cw?' active-week':pct===100?' done-week':'');
+    div.innerHTML=`<div class="wt-week-num">S${week.week}</div><div class="wt-dots">${rw.map(w=>`<div class="wt-dot ${(S[w.id]||{}).done?(S[w.id].pace?'done':'partial'):''}" title="${w.badge}"></div>`).join('')}</div><div class="wt-pct">${pct}%</div>`;
+    el.appendChild(div);
   });
 }
 
-// ── MAIN ─────────────────────────────────────────────────────────────
-function renderAll() {
-  renderPlan();
-  updateStats();
+function updateCharts(){
+  const allW=PLAN.flatMap(w=>w.workouts);
+  const runs=allW.filter(w=>w.type==='run'&&S[w.id]&&(S[w.id].pace||S[w.id].dist)).map(w=>({lbl:w.date,pace:p2s(S[w.id].pace),dist:parseFloat(S[w.id].dist||0)}));
+  const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.isPace?s2p(c.raw)+'/km':c.raw+'km'}}},scales:{x:{ticks:{color:'#55556a',font:{size:10,family:'DM Mono'}},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#55556a',font:{size:10,family:'DM Mono'}},grid:{color:'rgba(255,255,255,0.03)'}}}};
+  const labels=runs.length?runs.map(r=>r.lbl):['--'];
+  if(cPace)cPace.destroy();
+  cPace=new Chart(document.getElementById('chart-pace').getContext('2d'),{type:'line',data:{labels,datasets:[
+    {isPace:true,label:'pace',data:runs.map(r=>r.pace||null),borderColor:'#7DB8F9',backgroundColor:'rgba(125,184,249,0.07)',pointBackgroundColor:'#7DB8F9',pointRadius:4,tension:0.35,fill:true},
+    {label:'sub55',data:runs.map(()=>T55),borderColor:'rgba(125,249,170,0.45)',borderDash:[5,4],pointRadius:0,tension:0},
+    {label:'sub50',data:runs.map(()=>T50),borderColor:'rgba(249,196,125,0.45)',borderDash:[5,4],pointRadius:0,tension:0},
+  ]},options:{...base,scales:{...base.scales,y:{...base.scales.y,reverse:true,min:250,max:460,ticks:{...base.scales.y.ticks,callback:v=>s2p(v)}}}}});
+  if(cDist)cDist.destroy();
+  cDist=new Chart(document.getElementById('chart-dist').getContext('2d'),{type:'bar',data:{labels,datasets:[
+    {label:'km',data:runs.map(r=>r.dist||null),backgroundColor:'rgba(125,249,170,0.18)',borderColor:'rgba(125,249,170,0.55)',borderWidth:1,borderRadius:3},
+  ]},options:base});
 }
 
-loadState();
-renderAll();
-updateCountdown();
-setInterval(updateCountdown, 1000);
+function badgeClass(t){return{run:'b-run',str:'b-str',rest:'b-rest',race:'b-race'}[t]||'b-rest';}
+function phaseClass(p){return{base:'ph-base',dev:'ph-dev',peak:'ph-peak',taper:'ph-taper'}[p]||'ph-base';}
 
-// Keyboard: ESC closes modal
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal({target: document.getElementById('modal-overlay')});
+function renderPlan(){
+  const c=document.getElementById('plan-container');c.innerHTML='';
+  PLAN.forEach((week,wi)=>{
+    const rw=week.workouts.filter(w=>w.type!=='rest'&&w.type!=='race');
+    const dw=rw.filter(w=>(S[w.id]||{}).done).length;
+    const pct=rw.length?Math.round(dw/rw.length*100):0;
+    const scls=pct===100?'ok':pct>0?'partial':'none';
+    const stxt=pct===100?'✓ completa':pct>0?dw+'/'+rw.length+' feitos':'pendente';
+    const block=document.createElement('div');
+    block.className='week-block';block.id='wb-'+week.week;
+    block.innerHTML=`<div class="week-head" onclick="toggleWeek(${week.week})"><div class="wh-left"><div class="wh-title">${week.label}</div><span class="phase-pill ${phaseClass(week.phase)}">${week.phaseLabel}</span></div><div class="wh-right"><div class="wh-vol">${week.vol}</div><div class="wh-status ${scls}">${stxt}</div><div class="wh-chevron" id="chev-${week.week}">▼</div></div></div><div class="week-body" id="wbody-${week.week}">${week.workouts.map(w=>buildRow(w)).join('')}</div>`;
+    c.appendChild(block);
+  });
+}
+
+function buildRow(w){
+  const log=S[w.id]||{},done=!!log.done;
+  const hasLog=!!(log.dist||log.pace||log.dur||log.notes);
+  const feedback=w.type==='run'&&hasLog?analyzeWorkout(w,log):[];
+  const fb=feedback.length?feedback[0]:null;
+  const chips=[log.dist?`<span class="wr-chip">${parseFloat(log.dist).toFixed(1)}km</span>`:'',log.pace?`<span class="wr-chip">${log.pace}/km</span>`:'',log.dur?`<span class="wr-chip">${log.dur}min</span>`:'',log.elev?`<span class="wr-chip">${log.elev}m</span>`:''].filter(Boolean).join('');
+  return`<div class="wr ${done?'done-row':''}" id="wr-${w.id}"><div class="wr-date">${w.day} · ${w.date}</div><div class="wr-badge ${badgeClass(w.type)}">${w.badge}</div><div><div class="wr-desc">${w.desc}</div>${fb?`<div class="wr-feedback ${fb.t==='ok'?'ok':'warn'}">${fb.msg}</div>`:''}<div class="wr-log-summary">${chips}</div></div><div class="wr-actions">${w.type!=='rest'?`<button class="log-toggle ${hasLog?'has':''}" onclick="toggleLog('${w.id}')">${hasLog?'ver log':'+ log'}</button>`:''}<button class="chk ${done?'on':''}" onclick="toggleDone('${w.id}')">${done?'✓':''}</button></div></div><div class="log-panel" id="lp-${w.id}">${buildPanel(w,log)}</div>`;
+}
+
+function buildPanel(w,log){
+  const analysis=w.type==='run'?analyzeWorkout(w,log):[];
+  const ahtml=analysis.map(a=>`<div class="la ${a.t}">${a.msg}</div>`).join('');
+  const hasSaved=!!(log.dist||log.pace);
+  return`<div class="log-grid"><div class="lf"><label>Distância (km)</label><input type="number" step="0.01" id="dist-${w.id}" value="${log.dist||''}" placeholder="${w.td?w.td+'km meta':'ex: 6.2'}"/></div><div class="lf"><label>Pace (min:seg/km)</label><input type="text" id="pace-${w.id}" value="${log.pace||''}" placeholder="${w.tp?s2p(w.tp)+' meta':'ex: 6:10'}"/></div><div class="lf"><label>Duração (min)</label><input type="number" step="1" id="dur-${w.id}" value="${log.dur||''}" placeholder="ex: 42"/></div><div class="lf"><label>Elevação (m)</label><input type="number" step="1" id="elev-${w.id}" value="${log.elev||''}" placeholder="ex: 45"/></div><div class="lf lf-notes"><label>Observações</label><input type="text" id="notes-${w.id}" value="${log.notes||''}" placeholder="Como foi? Sentiu bem? Dor? Clima?"/></div></div><div class="log-analysis-area" id="la-${w.id}">${ahtml}</div><div class="log-actions">${hasSaved?`<button class="btn-danger-ghost btn-sm" onclick="clearLog('${w.id}')">Apagar</button>`:''}<button class="btn-ghost btn-sm" onclick="toggleLog('${w.id}')">Fechar</button><button class="btn btn-sm" onclick="saveLog('${w.id}')">Salvar e analisar</button></div>`;
+}
+
+function toggleWeek(n){
+  const b=document.getElementById('wbody-'+n),c=document.getElementById('chev-'+n);
+  b.classList.toggle('open');c.classList.toggle('open');
+}
+function toggleAll(){
+  allExp=!allExp;
+  document.querySelectorAll('.week-body').forEach(el=>el.classList.toggle('open',allExp));
+  document.querySelectorAll('.wh-chevron').forEach(el=>el.classList.toggle('open',allExp));
+}
+function toggleLog(id){document.getElementById('lp-'+id)?.classList.toggle('open');}
+function toggleDone(id){if(!S[id])S[id]={};S[id].done=!S[id].done;save();renderAll();}
+function saveLog(id){
+  if(!S[id])S[id]={};
+  const g=k=>document.getElementById(k+'-'+id)?.value;
+  const dist=g('dist'),pace=g('pace'),dur=g('dur'),elev=g('elev'),notes=g('notes');
+  if(dist)S[id].dist=parseFloat(dist).toFixed(2);
+  if(pace)S[id].pace=pace.trim();
+  if(dur)S[id].dur=parseInt(dur);
+  if(elev)S[id].elev=parseInt(elev);
+  if(notes)S[id].notes=notes;
+  if(dist||pace)S[id].done=true;
+  save();renderAll();
+}
+function clearLog(id){const kd=(S[id]||{}).done;S[id]={done:kd};save();renderAll();}
+
+function tick(){
+  const diff=RACE_DATE-new Date();
+  if(diff<=0){['cd-d','cd-h','cd-m','cd-s'].forEach(i=>document.getElementById(i).textContent='00');return;}
+  const d=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
+  document.getElementById('cd-d').textContent=String(d).padStart(2,'0');
+  document.getElementById('cd-h').textContent=String(h).padStart(2,'0');
+  document.getElementById('cd-m').textContent=String(m).padStart(2,'0');
+  document.getElementById('cd-s').textContent=String(s).padStart(2,'0');
+}
+
+function renderAll(){renderPlan();updateStats();updateCharts();}
+
+// Live analysis on input
+document.addEventListener('input',e=>{
+  if(!e.target.id)return;
+  const parts=e.target.id.split('-');if(parts.length<2)return;
+  const wid=parts.slice(1).join('-');
+  const w=PLAN.flatMap(x=>x.workouts).find(x=>x.id===wid);
+  if(!w||w.type!=='run')return;
+  const tempLog={dist:document.getElementById('dist-'+wid)?.value,pace:document.getElementById('pace-'+wid)?.value};
+  const analysis=analyzeWorkout(w,tempLog);
+  const el=document.getElementById('la-'+wid);
+  if(el)el.innerHTML=analysis.map(a=>`<div class="la ${a.t}">${a.msg}</div>`).join('');
 });
+
+load();renderAll();tick();setInterval(tick,1000);
 </script>
 </body>
 </html>
